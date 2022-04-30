@@ -61,9 +61,22 @@ def execute_query(connection,query):                 #this function is execution
 ```
 ```
 connect=create_db_connection("movielens-small.db")
-```
 Database Connection Successfully!!
-
+```
+```
+query = "SELECT name FROM sqlite_master WHERE type = 'table'"        #Table names in database There are 4 table in database 
+result=execute_query(connect,query)
+table_names=[]
+for i in result:
+    print("Table Name:",i)
+    table_names.append(i[0])
+    
+query was succesfully!!
+Table Name: ('movies',)
+Table Name: ('ratings',)
+Table Name: ('links',)
+Table Name: ('tags',)
+```
 
 4. The command is run to start a session over Spark. To use the data, 
 ```
