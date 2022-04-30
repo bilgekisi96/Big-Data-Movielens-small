@@ -1,8 +1,9 @@
-# Movielens-small analysis with Python and Modelling with Pyspark
+# Movielens-small Data analysis with Python 
+# Modelling with Pyspark
 
 Data analysis for Movielens-Small data was carried out using Apache Spark via Jupyter Notebook.
+
 ## Summary
-=======
 
 This dataset (ml-latest-small) describes 5-star rating and free-text tagging activity from [MovieLens](http://movielens.org), a movie recommendation service. It contains 100023 ratings table and 2488 tag table across 8570 movies and 8570 links tables. These data were created by 610 users between March 29, 1996 and September 24, 2018. This dataset was generated on September 26, 2018.
 
