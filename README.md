@@ -279,8 +279,8 @@ plt.title(" 5 most rated genres")
 plt.show()
 
 ```
-```
-https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png
+
+![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png)
 
 ```
 
