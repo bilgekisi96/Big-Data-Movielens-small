@@ -107,13 +107,12 @@ query was succesfully!!
 tags Table Row Number --> 2488 
 
 ```
-```
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir.png)
 
 ```
 
+```
 7.Checking null values in tables I used list comprehansion method for check to rows and values
-
 ```
 for i in table_names:                                            #Check to Null values in Tables 
     query="SELECT * FROM {cha}".format(cha=i)
@@ -129,6 +128,7 @@ query was succesfully!!
 query was succesfully!!
 ['There are not NULL value in table']
 ```
+
 
 4. The command is run to start a session over Spark. To use the data, 
 ```
