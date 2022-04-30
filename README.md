@@ -1,4 +1,5 @@
-# Movielens-small-analysis-with-pythonsql-Modelling-Pyspark
+# Movielens-small analysis with Python and Modelling with Pyspark
+
 Data analysis for Movielens-Small data was carried out using Apache Spark via Jupyter Notebook.
 ## Summary
 =======
