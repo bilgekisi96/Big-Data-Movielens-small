@@ -283,7 +283,7 @@ plt.show()
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png)
 
 ```
-
+```
 4. The command is run to start a session over Spark. To use the data, 
 ```
 spark = SparkSession.builder.appName('MovieLens').getOrCreate()
