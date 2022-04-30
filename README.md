@@ -59,6 +59,11 @@ def execute_query(connection,query):                 #this function is execution
     except Error as err:
         print(f"Error query does not work:{err}")
 ```
+```
+connect=create_db_connection("movielens-small.db")
+```
+Database Connection Successfully!!
+
 
 4. The command is run to start a session over Spark. To use the data, 
 ```
