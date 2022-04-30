@@ -97,6 +97,7 @@ colors = sns.color_palette('pastel')[0:5]
 plt.title("TABLES ROW NUMBERS")
 plt.pie(nums, labels = labels, colors = colors, autopct='%.0f%%')
 plt.show()
+
 query was succesfully!!
 movies Table Row Number --> 8570 
 query was succesfully!!
@@ -135,6 +136,7 @@ for i in table_names:
     query="SELECT COUNT(DISTINCT movieId) FROM {cha}".format(cha=i)                              
     result=execute_query(connect,query)                                                             #Checking unique movieIDs in
     print("{name} table unique features--> {result}".format(name=i,result=tuple(result)[0][0]))     #tables
+
 query was succesfully!!
 movies table unique features--> 8570
 query was succesfully!!
@@ -151,8 +153,22 @@ query = "SELECT COUNT(*) FROM movies b INNER JOIN ratings a ON a.movieId = b.mov
 result=execute_query(connect,query)                                                    #row number after inner join 
 print(tuple(result)[0][0])                                                             #I setup relation to tables on movieId's
 query was succesfully!!
+
 100023
 ```
+10.After inner joın I checked to column names
+```
+query = "SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"    #I made INNER JOIN for arrive to genres colunm
+result=execute_query(connect,query)                                               #columns names between two tables  
+set([i[0] for i in result.description])
+query was succesfully!!
+
+{'genres', 'movieId', 'rating', 'timestamp', 'title', 'userId', 'year'}
+
+```
+
+
+
 
 4. The command is run to start a session over Spark. To use the data, 
 ```
