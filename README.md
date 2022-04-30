@@ -300,7 +300,7 @@ plt.show()
 # Modelling with Pyspark
 
 ```
-
+```
 4. The command is run to start a session over Spark. To use the data, 
 ```
 spark = SparkSession.builder.appName('MovieLens').getOrCreate()
