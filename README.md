@@ -30,7 +30,7 @@ After all the above installations are completed, it will be possible to start wo
 
 2. To import the Python libraries to be used, write the `!pip install` command for downloading. Example: `!pip install pyspark ` Example: `!pip install pyspark `
 
-3.Libraries are imported. 
+### 3.Libraries are imported. 
 
 ```
 import sqlite3,sys                                   
@@ -38,7 +38,7 @@ import os.path
 import matplotlib.pyplot as plt
 import seaborn as sns
 ```
-4.The functions requirement for connection to database and execute to queries
+### 4.The functions requirement for connection to database and execute to queries
 
 ```
 def create_db_connection(dbfile):                     #this function is creating to connection with database 
@@ -66,7 +66,7 @@ def execute_query(connection,query):                 #this function is execution
 connect=create_db_connection("movielens-small.db")
 Database Connection Successfully!!
 ```
-5.the command take to table names from Database 
+### 5.the command take to table names from Database 
 ```
 query = "SELECT name FROM sqlite_master WHERE type = 'table'"        #Table names in database There are 4 table in database 
 result=execute_query(connect,query)
@@ -81,7 +81,7 @@ Table Name: ('ratings',)
 Table Name: ('links',)
 Table Name: ('tags',)
 ```
-6.Investigating  to table row numbers in Database  
+### 6.Investigating  to table row numbers in Database  
 ```
 plt.figure(figsize=(8,8))
 nums,labels=[],[]
@@ -113,7 +113,7 @@ tags Table Row Number --> 2488
 ```
 
 ```
-7.Checking null values in tables I used list comprehansion method for check to rows and values
+### 7.Checking null values in tables I used list comprehansion method for check to rows and values
 ```
 for i in table_names:                                            #Check to Null values in Tables 
     query="SELECT * FROM {cha}".format(cha=i)
@@ -130,7 +130,7 @@ query was succesfully!!
 ['There are not NULL value in table']
 ```
 
-8.Looking unique values in tables 
+### 8.Looking unique values in tables 
 ```
 for i in table_names:                                                                             
     query="SELECT COUNT(DISTINCT movieId) FROM {cha}".format(cha=i)                              
@@ -147,7 +147,7 @@ query was succesfully!!
 tags table unique features--> 672
 ```
 
-9.First join process on movieIds for ralational mavielens database I joined 2 table mavies and ratings and I check to row number
+### 9.First join process on movieIds for ralational mavielens database I joined 2 table mavies and ratings and I check to row number
 ```
 query = "SELECT COUNT(*) FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"
 result=execute_query(connect,query)                                                    #row number after inner join 
@@ -156,7 +156,7 @@ query was succesfully!!
 
 100023
 ```
-10.After inner joın I checked to column names
+### 10.After inner joın I checked to column names
 ```
 query = "SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"    #I made INNER JOIN for arrive to genres colunm
 result=execute_query(connect,query)                                               #columns names between two tables  
