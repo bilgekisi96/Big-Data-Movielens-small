@@ -233,10 +233,11 @@ query was succesfully!!
 
 ## QUESTIONS PARTS:
 
+
 ### 1.Question : Write a SQL query to create a dataframe with including userid, movieid, genre and rating
 ```
 query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId LIMIT 5"
-result=execute_query(connect,query)   # userıd movieıd rating and genres dataframe 
+result=execute_query(connect,query)  
 
 for i in result:print(i)
 
