@@ -38,7 +38,7 @@ import os.path
 import matplotlib.pyplot as plt
 import seaborn as sns
 ```
-### 4.The functions requirement for connection to database and execute to queries
+### 4.The functions requirements for connection to database and execute to queries
 
 ```
 def create_db_connection(dbfile):                     #this function is creating to connection with database 
@@ -66,7 +66,7 @@ def execute_query(connection,query):                 #this function is execution
 connect=create_db_connection("movielens-small.db")
 Database Connection Successfully!!
 ```
-### 5.the command take to table names from Database 
+### 5.The command take to table names from Database 
 ```
 query = "SELECT name FROM sqlite_master WHERE type = 'table'"        #Table names in database There are 4 table in database 
 result=execute_query(connect,query)
@@ -81,7 +81,7 @@ Table Name: ('ratings',)
 Table Name: ('links',)
 Table Name: ('tags',)
 ```
-### 6.Investigating  to table row numbers in Database  
+### 6.Investigating table row numbers in Database  
 ```
 plt.figure(figsize=(8,8))
 nums,labels=[],[]
@@ -113,7 +113,7 @@ tags Table Row Number --> 2488
 ```
 
 ```
-### 7.Checking null values in tables I used list comprehansion method for check to rows and values
+### 7.Checking null values in tables using list comprehansion method for check to rows and values
 ```
 for i in table_names:                                            #Check to Null values in Tables 
     query="SELECT * FROM {cha}".format(cha=i)
@@ -147,7 +147,7 @@ query was succesfully!!
 tags table unique features--> 672
 ```
 
-### 9.First join process on movieIds for ralational mavielens database I joined 2 table mavies and ratings and I check to row number
+### 9.First join process on movieIds for relational movielens database joined 2 table movies and ratings Also check to row number
 ```
 query = "SELECT COUNT(*) FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"
 result=execute_query(connect,query)                                                    #row number after inner join 
@@ -156,7 +156,7 @@ query was succesfully!!
 
 100023
 ```
-### 10.After inner joın I checked to column names
+### 10.After inner join process checked to column names
 ```
 query = "SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"    #I made INNER JOIN for arrive to genres colunm
 result=execute_query(connect,query)                                               #columns names between two tables  
@@ -166,9 +166,123 @@ query was succesfully!!
 {'genres', 'movieId', 'rating', 'timestamp', 'title', 'userId', 'year'}
 
 ```
+```
 
+query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId LIMIT 5"
+result=execute_query(connect,query)                                               # userıd movieıd rating and genres dataframe 
+for i in result:print(i)
 
+query was succesfully!!
+(7, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+(10, 1, 4.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+(13, 1, 4.5, 'Adventure|Animation|Children|Comedy|Fantasy')
+(16, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+(21, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
 
+```
+### Missing values between two table movies and ratings
+```
+query = "SELECT a.movieId,b.movieId,b.userId,b.rating,b.timestamp FROM movies a LEFT JOIN ratings b ON b.movieId = a.movieId WHERE b.rating IS NULL ; "
+result=execute_query(connect,query)                   #There are 18 NULL values between movies and ratings 
+for i in result:print(i)                              #This values there are in movies table but there arent in ratings table 
+
+query was succesfully!!
+(133, None, None, None, None)
+(654, None, None, None, None)
+(2499, None, None, None, None)
+(6328, None, None, None, None)
+(7541, None, None, None, None)
+(8574, None, None, None, None)
+(8765, None, None, None, None)
+(31408, None, None, None, None)
+(31687, None, None, None, None)
+(33340, None, None, None, None)
+(49422, None, None, None, None)
+(54248, None, None, None, None)
+(59549, None, None, None, None)
+(60020, None, None, None, None)
+(60382, None, None, None, None)
+(68486, None, None, None, None)
+(70695, None, None, None, None)
+(86487, None, None, None, None)
+
+```
+### 11. Playling with subquaries cleaning and prepared genres column 
+```
+query = "SELECT movieId,title,year,imdbId,tmdbId,userId,rating,timestamp,SUBSTR(genre,1,INSTR(genre,'|') - 1) as genres FROM (SELECT movieId,title,year,SUBSTR(genres, 1 , 10 ) as genre,imdbId,tmdbId,userId,rating,timestamp FROM (SELECT a.movieId,a.title,a.year,a.genres,b.imdbId,b.tmdbId,c.userId,c.rating,c.timestamp FROM movies a INNER JOIN links b ON a.movieId = b.movieId INNER JOIN ratings c ON b.movieId = c.movieId)) LIMIT 5;"
+result=execute_query(connect,query)                                                # I look and prepare values
+for i in result:print(i) 
+
+query was succesfully!!
+(1, 'Toy Story', 1995, '0114709', '862', 7, 5.0, 835583333, 'Adventure')
+(1, 'Toy Story', 1995, '0114709', '862', 10, 4.0, 1113487849, 'Adventure')
+(1, 'Toy Story', 1995, '0114709', '862', 13, 4.5, 1275864236, 'Adventure')
+(1, 'Toy Story', 1995, '0114709', '862', 16, 5.0, 855198755, 'Adventure')
+(1, 'Toy Story', 1995, '0114709', '862', 21, 5.0, 865106839, 'Adventure')
+
+```
+
+## QUESTIONS PARTS:
+
+### 1.Question : Write a SQL query to create a dataframe with including userid, movieid, genre and rating
+```
+query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId LIMIT 5"
+result=execute_query(connect,query)   # userıd movieıd rating and genres dataframe 
+for i in result:print(i)
+
+query was succesfully!!
+(7, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+(10, 1, 4.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+(13, 1, 4.5, 'Adventure|Animation|Children|Comedy|Fantasy')
+(16, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+(21, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
+
+```
+### 2.Question : Count ratings for each movie, and list top 5 movies with the highest value
+```
+query = "SELECT COUNT(rating) as terra,title FROM (SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId) GROUP BY title ORDER BY terra DESC LIMIT 5;"
+result=execute_query(connect,query)
+for i in result:print(i)
+
+query was succesfully!!
+(337, 'Silence of the Lambs, The')
+(328, 'Shawshank Redemption, The')
+(327, 'Pulp Fiction')
+(324, 'Jurassic Park')
+(318, 'Forrest Gump')
+```
+### 3.Question: Find and list top 5 most rated genres
+```
+query = "SELECT COUNT(rating) as terra,genres FROM (SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId) GROUP BY genres ORDER BY terra DESC LIMIT 5"
+result=execute_query(connect,query)
+keys,values=[],[]
+for i in result:
+    keys.append(i[0])
+    values.append(i[1])
+    print(i)
+
+query was succesfully!!
+(7008, 'Drama')
+(6396, 'Comedy')
+(3877, 'Comedy|Romance')
+(3121, 'Drama|Romance')
+(3000, 'Comedy|Drama')
+```
+```
+fig, ax = plt.subplots(figsize=(12,6))
+
+bars = ax.bar(values, keys)
+ax.bar_label(bars)
+plt.xlabel("Genres")
+plt.ylabel("Number of genres")
+plt.title(" 5 most rated genres")
+plt.show()
+
+```
+```
+https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png
+
+```
 
 4. The command is run to start a session over Spark. To use the data, 
 ```
