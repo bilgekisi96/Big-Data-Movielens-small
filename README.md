@@ -47,6 +47,7 @@ def create_db_connection(dbfile):                     #this function is creating
     except Error as err:
         print(f"Error Database connection failed !!!!: '{err}'")
 ```
+```
 
 def execute_query(connection,query):                 #this function is execution for queries
     cursor = connection.cursor()
