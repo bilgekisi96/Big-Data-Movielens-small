@@ -81,6 +81,7 @@ Table Name: ('ratings',)
 Table Name: ('links',)
 Table Name: ('tags',)
 ```
+6.Investigating  to table row numbers in Database  
 ```
 plt.figure(figsize=(8,8))
 nums,labels=[],[]
@@ -109,6 +110,24 @@ tags Table Row Number --> 2488
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir.png)
 
 ```
+7.Checking null values in tables I used list comprehansion method for check to rows and values
+
+```
+for i in table_names:                                            #Check to Null values in Tables 
+    query="SELECT * FROM {cha}".format(cha=i)
+    result=execute_query(connect,query) 
+    print(["There are Null" if False in [False if (j=="NULL" or j==None) else True for j in result for k in j] else "There are not NULL value in table"])
+    
+query was succesfully!!
+['There are not NULL value in table']
+query was succesfully!!
+['There are not NULL value in table']
+query was succesfully!!
+['There are not NULL value in table']
+query was succesfully!!
+['There are not NULL value in table']
+```
+   
 4. The command is run to start a session over Spark. To use the data, 
 ```
 spark = SparkSession.builder.appName('MovieLens').getOrCreate()
