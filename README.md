@@ -1,5 +1,5 @@
 # Movielens-small Data analysis with Python 
-# Modelling with Pyspark
+
 
 Data analysis for Movielens-Small data was carried out using Apache Spark via Jupyter Notebook.
 
@@ -295,8 +295,11 @@ plt.show()
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png)
 
 ```
+```
+# Modelling with Pyspark
 
 ```
+
 4. The command is run to start a session over Spark. To use the data, 
 ```
 spark = SparkSession.builder.appName('MovieLens').getOrCreate()
