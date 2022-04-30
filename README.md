@@ -71,6 +71,7 @@ Database Connection Successfully!!
 query = "SELECT name FROM sqlite_master WHERE type = 'table'"        #Table names in database There are 4 table in database 
 result=execute_query(connect,query)
 table_names=[]
+
 for i in result:
     print("Table Name:",i)
     table_names.append(i[0])
@@ -85,6 +86,7 @@ Table Name: ('tags',)
 ```
 plt.figure(figsize=(8,8))
 nums,labels=[],[]
+
 for i in table_names:                                            #Tables row numbers
     query="SELECT * FROM {cha}".format(cha=i)
     result=execute_query(connect,query) 
@@ -92,6 +94,7 @@ for i in table_names:                                            #Tables row num
     print("{table} Table Row Number --> {num} ".format(table=i,num=rownum))
     nums.append(rownum)
     labels.append(i)
+    
 #define Seaborn color palette to use
 colors = sns.color_palette('pastel')[0:5]
 plt.title("TABLES ROW NUMBERS")
@@ -160,6 +163,7 @@ query was succesfully!!
 ```
 query = "SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"    #I made INNER JOIN for arrive to genres colunm
 result=execute_query(connect,query)                                               #columns names between two tables  
+
 set([i[0] for i in result.description])
 query was succesfully!!
 
@@ -170,6 +174,7 @@ query was succesfully!!
 
 query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId LIMIT 5"
 result=execute_query(connect,query)                                               # userıd movieıd rating and genres dataframe 
+
 for i in result:print(i)
 
 query was succesfully!!
@@ -183,8 +188,9 @@ query was succesfully!!
 ### Missing values between two table movies and ratings
 ```
 query = "SELECT a.movieId,b.movieId,b.userId,b.rating,b.timestamp FROM movies a LEFT JOIN ratings b ON b.movieId = a.movieId WHERE b.rating IS NULL ; "
-result=execute_query(connect,query)                   #There are 18 NULL values between movies and ratings 
-for i in result:print(i)                              #This values there are in movies table but there arent in ratings table 
+result=execute_query(connect,query)                  
+
+for i in result:print(i)                            
 
 query was succesfully!!
 (133, None, None, None, None)
@@ -210,7 +216,8 @@ query was succesfully!!
 ### 11. Playling with subquaries cleaning and prepared genres column 
 ```
 query = "SELECT movieId,title,year,imdbId,tmdbId,userId,rating,timestamp,SUBSTR(genre,1,INSTR(genre,'|') - 1) as genres FROM (SELECT movieId,title,year,SUBSTR(genres, 1 , 10 ) as genre,imdbId,tmdbId,userId,rating,timestamp FROM (SELECT a.movieId,a.title,a.year,a.genres,b.imdbId,b.tmdbId,c.userId,c.rating,c.timestamp FROM movies a INNER JOIN links b ON a.movieId = b.movieId INNER JOIN ratings c ON b.movieId = c.movieId)) LIMIT 5;"
-result=execute_query(connect,query)                                                # I look and prepare values
+result=execute_query(connect,query)                                                                      # I look and prepare values
+
 for i in result:print(i) 
 
 query was succesfully!!
@@ -228,6 +235,7 @@ query was succesfully!!
 ```
 query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId LIMIT 5"
 result=execute_query(connect,query)   # userıd movieıd rating and genres dataframe 
+
 for i in result:print(i)
 
 query was succesfully!!
@@ -242,6 +250,7 @@ query was succesfully!!
 ```
 query = "SELECT COUNT(rating) as terra,title FROM (SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId) GROUP BY title ORDER BY terra DESC LIMIT 5;"
 result=execute_query(connect,query)
+
 for i in result:print(i)
 
 query was succesfully!!
@@ -256,6 +265,7 @@ query was succesfully!!
 query = "SELECT COUNT(rating) as terra,genres FROM (SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId) GROUP BY genres ORDER BY terra DESC LIMIT 5"
 result=execute_query(connect,query)
 keys,values=[],[]
+
 for i in result:
     keys.append(i[0])
     values.append(i[1])
@@ -283,6 +293,7 @@ plt.show()
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png)
 
 ```
+
 ```
 4. The command is run to start a session over Spark. To use the data, 
 ```
