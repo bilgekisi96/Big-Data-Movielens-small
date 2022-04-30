@@ -3,7 +3,7 @@ Data analysis for Movielens-Small data was carried out using Apache Spark via Ju
 ## Summary
 =======
 
-This dataset (ml-latest-small) describes 5-star rating and free-text tagging activity from [MovieLens](http://movielens.org), a movie recommendation service. It contains 100023 ratings and 2488 tag applications across 8570 movies. These data were created by 610 users between March 29, 1996 and September 24, 2018. This dataset was generated on September 26, 2018.
+This dataset (ml-latest-small) describes 5-star rating and free-text tagging activity from [MovieLens](http://movielens.org), a movie recommendation service. It contains 100023 ratings table and 2488 tag table across 8570 movies and 8570 links tables. These data were created by 610 users between March 29, 1996 and September 24, 2018. This dataset was generated on September 26, 2018.
 
 ## Setup
   ### Pyspark setup
@@ -30,15 +30,38 @@ After all the above installations are completed, it will be possible to start wo
 
 2. To import the Python libraries to be used, write the `!pip install` command for downloading. Example: `!pip install pyspark ` Example: `!pip install pyspark `
 3.Libraries are imported. 
-```import pyspark
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-from pyspark.sql import SparkSession 
 ```
-5. The command is run to start a session over Spark. To use the data, the required movielens data is drawn from the movielens data that we have downloaded before. If you get an error when you call the ml-25m folder, you may need to add the **C:\Users\EnesA\ml-25m** directory to the Path in the Environment variables. The **.show** command allows you to see if the data is coming.
+import sqlite3,sys                                   
+import os.path
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+4.The functions requirement for connection to database and execute to queries
+```
+def create_db_connection(dbfile):                     #this function is creating to connection with database 
+    connection = None
+    try:
+        connection = sqlite3.connect(dbfile)
+        print("Database Connection Successfully!!")
+        return connection
+    except Error as err:
+        print(f"Error Database connection failed !!!!: '{err}'")
+
+def execute_query(connection,query):                 #this function is execution for queries
+    cursor = connection.cursor()
+    try:
+        quer=cursor.execute(query)
+        print("query was succesfully!!")
+        connection.commit()
+        return quer
+    except Error as err:
+        print(f"Error query does not work:{err}")
+```
+
+4. The command is run to start a session over Spark. To use the data, 
 ```
 spark = SparkSession.builder.appName('MovieLens').getOrCreate()
+
 ratings = spark.read.option("header", "true").csv("ml-25m/ratings.csv")
 ratings.show(5)
 +------+-------+------+----------+
