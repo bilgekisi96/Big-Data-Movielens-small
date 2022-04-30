@@ -109,6 +109,7 @@ tags Table Row Number --> 2488
 ```
 ```
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir.png)
+
 ```
 
 7.Checking null values in tables I used list comprehansion method for check to rows and values
