@@ -27,9 +27,9 @@ After all the above installations are completed, it will be possible to start wo
 # Task-1 Exploratory Data Analysis
 
 1.  First of all, a new page is opened by saying File>New Notebook on jupyter notebook. 
-2. By typing the `pwd` command, the save location of jupyter is learned and the data to be used is loaded here.  In this study, "MovieLens 25M movie ratings" data is downloaded via https://grouplens.org/datasets/movielens/25m/ link. The downloaded .csv files are placed in the **C:\Users\EnesA** directory. 
-3. To import the Python libraries to be used, write the `!pip install` command for downloading. Example: `!pip install pyspark ` Example: `!pip install pyspark `
-4.Libraries are imported. 
+
+2. To import the Python libraries to be used, write the `!pip install` command for downloading. Example: `!pip install pyspark ` Example: `!pip install pyspark `
+3.Libraries are imported. 
 ```import pyspark
 import matplotlib.pyplot as plt
 import pandas as pd
