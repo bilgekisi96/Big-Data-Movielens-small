@@ -129,6 +129,30 @@ query was succesfully!!
 ['There are not NULL value in table']
 ```
 
+8.Looking unique values in tables 
+```
+for i in table_names:                                                                             
+    query="SELECT COUNT(DISTINCT movieId) FROM {cha}".format(cha=i)                              
+    result=execute_query(connect,query)                                                             #Checking unique movieIDs in
+    print("{name} table unique features--> {result}".format(name=i,result=tuple(result)[0][0]))     #tables
+query was succesfully!!
+movies table unique features--> 8570
+query was succesfully!!
+ratings table unique features--> 8552
+query was succesfully!!
+links table unique features--> 8570
+query was succesfully!!
+tags table unique features--> 672
+```
+
+9.First join process on movieIds for ralational mavielens database I joined 2 table mavies and ratings and I check to row number
+```
+query = "SELECT COUNT(*) FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"
+result=execute_query(connect,query)                                                    #row number after inner join 
+print(tuple(result)[0][0])                                                             #I setup relation to tables on movieId's
+query was succesfully!!
+100023
+```
 
 4. The command is run to start a session over Spark. To use the data, 
 ```
