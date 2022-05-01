@@ -413,10 +413,10 @@ spark = SparkSession \
     .config("spark.some.config.option", "some-value") \
     .getOrCreate()                                                              #Evaluating to Spark session
 ```
-
 ```
 ### DATA ANALYSIS AND EXPLORATION
 ```
+
 ```
 movies_df = spark.read.load("movies.txt", format='csv', header = True)
 ratings_df = spark.read.load("ratings.txt", format='csv', header = True)        #Taking tables 
@@ -613,17 +613,10 @@ root
 
 ```
 
-
-```
 ## DATA TRAIN TEST SPLIT
-```
-
-```
 
 
 
-
-```
 
 
 
