@@ -1,4 +1,4 @@
-# Movielens-small Data analysis with Python 
+# Movielens-small Data with Python 
 
 
 Data analysis for Movielens-Small data was carried out using Apache Spark via Jupyter Notebook.
