@@ -386,10 +386,248 @@ plt.show()
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir%20(1).png)
 
 ```
+
 ```
 # Modelling with Pyspark
 
 ```
+
+```
+from pyspark.sql import SparkSession
+from pyspark.sql import SQLContext                                            #import to libraries
+from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.ml.tuning import CrossValidator
+from pyspark.ml.recommendation import ALS
+from pyspark.sql.functions import udf,col,when
+import numpy as np
+from IPython.display import Image
+from IPython.display import display
+from IPython.display import clear_output
+```
+
+```
+from pyspark.sql import SparkSession
+spark = SparkSession \
+    .builder \
+    .appName("moive analysis") \
+    .config("spark.some.config.option", "some-value") \
+    .getOrCreate()                                                              #Evaluating to Spark session
+```
+
+```
+### DATA ANALYSIS AND EXPLORATION
+```
+```
+movies_df = spark.read.load("movies.txt", format='csv', header = True)
+ratings_df = spark.read.load("ratings.txt", format='csv', header = True)        #Taking tables 
+links_df = spark.read.load("links.txt", format='csv', header = True)
+tags_df = spark.read.load("tags.txt", format='csv', header = True)
+```
+
+```
+print(type(movies_df))                                                          #movies table row count
+movies_df.count()
+<class 'pyspark.sql.dataframe.DataFrame'>
+
+8570
+
+```
+
+```
+movies_df.show(5)                                                               #movies table first 5 rows
+movies_df.createOrReplaceTempView("movies_df")
+display (spark.sql("SELECT * FROM movies_df limit 5"))
+
++-------+--------------------+----+--------------------+
+|movieId|               title|year|              genres|
++-------+--------------------+----+--------------------+
+|      1|           Toy Story|1995|Adventure|Animati...|
+|      2|             Jumanji|1995|Adventure|Childre...|
+|      3|    Grumpier Old Men|1995|      Comedy|Romance|
+|      4|   Waiting to Exhale|1995|Comedy|Drama|Romance|
+|      5|Father of the Bri...|1995|              Comedy|
++-------+--------------------+----+--------------------+
+only showing top 5 rows
+
+DataFrame[movieId: string, title: string, year: string, genres: string]
+```
+
+```
+ratings_df.show(5)                                                              #ratings table for 5 rows
+ratings_df.createOrReplaceTempView("ratings_df")
+display (spark.sql("SELECT * FROM ratings_df limit 5"))
+
++------+-------+------+---------+
+|userId|movieId|rating|timestamp|
++------+-------+------+---------+
+|     1|      6|   2.0|980730861|
+|     1|     22|   3.0|980731380|
+|     1|     32|   2.0|980731926|
+|     1|     50|   5.0|980732037|
+|     1|    110|   4.0|980730408|
++------+-------+------+---------+
+only showing top 5 rows
+
+DataFrame[userId: string, movieId: string, rating: string, timestamp: string]
+
+```
+
+```
+links_df.show(5)
+links_df.createOrReplaceTempView("links_df")                                    #links table first 5 rows
+display (spark.sql("SELECT * FROM links_df limit 5"))
+
++-------+-------+------+
+|movieId| imdbId|tmdbId|
++-------+-------+------+
+|      1|0114709|   862|
+|      2|0113497|  8844|
+|      3|0113228| 15602|
+|      4|0114885| 31357|
+|      5|0113041| 11862|
++-------+-------+------+
+only showing top 5 rows
+
+DataFrame[movieId: string, imdbId: string, tmdbId: string]
+
+```
+```
+tmp1 = ratings_df.groupBy("userID").count().toPandas()['count'].min()
+tmp2 = ratings_df.groupBy("movieId").count().toPandas()['count'].min()
+print('For the users that rated movies and the movies that were rated:')
+print('Minimum number of ratings per user is {}'.format(tmp1))
+print('Minimum number of ratings per movie is {}'.format(tmp2))
+For the users that rated movies and the movies that were rated:
+
+Minimum number of ratings per user is 20
+Minimum number of ratings per movie is 1
+
+```
+
+```
+tmp1 = sum(ratings_df.groupBy("movieId").count().toPandas()['count'] == 1)
+tmp2 = ratings_df.select('movieId').distinct().count()
+print('{} out of {} movies are rated by only one user'.format(tmp1, tmp2))
+
+2808 out of 8552 movies are rated by only one user
+
+```
+
+```
+sc = spark.sparkContext
+sqlContext=SQLContext(sc)
+```
+
+```
+ratings_df=spark.read.csv("ratings.txt",inferSchema=True,header=True) #columns value types in ratings table
+ratings_df.printSchema()
+
+root
+ |-- userId: integer (nullable = true)
+ |-- movieId: integer (nullable = true)
+ |-- rating: double (nullable = true)
+ |-- timestamp: integer (nullable = true)
+
+```
+
+```
+ratings_df.show()                           #taking ratings table
+
++------+-------+------+---------+
+|userId|movieId|rating|timestamp|
++------+-------+------+---------+
+|     1|      6|   2.0|980730861|
+|     1|     22|   3.0|980731380|
+|     1|     32|   2.0|980731926|
+|     1|     50|   5.0|980732037|
+|     1|    110|   4.0|980730408|
+|     1|    164|   3.0|980731766|
+|     1|    198|   3.0|980731282|
+|     1|    260|   5.0|980730769|
+|     1|    296|   4.0|980731208|
+|     1|    303|   3.0|980732235|
+|     1|    318|   3.0|980731417|
+|     1|    350|   3.0|980731745|
+|     1|    366|   2.0|980731621|
+|     1|    367|   4.0|980731380|
+|     1|    431|   2.0|980731312|
+|     1|    432|   2.0|980732235|
+|     1|    451|   1.0|980731789|
+|     1|    457|   4.0|980730816|
+|     1|    474|   3.0|980730816|
+|     1|    480|   4.0|980731903|
++------+-------+------+---------+
+only showing top 20 rows
+
+```
+
+```
+movies_df=spark.read.csv('movies.txt',inferSchema=True,header=True)  #Table value types 
+movies_df.printSchema()
+
+root
+ |-- movieId: integer (nullable = true)
+ |-- title: string (nullable = true)
+ |-- year: string (nullable = true)
+ |-- genres: string (nullable = true)
+
+```
+
+```
+movies_df.show()
+
++-------+--------------------+----+--------------------+
+|movieId|               title|year|              genres|
++-------+--------------------+----+--------------------+
+|      1|           Toy Story|1995|Adventure|Animati...|
+|      2|             Jumanji|1995|Adventure|Childre...|
+|      3|    Grumpier Old Men|1995|      Comedy|Romance|
+|      4|   Waiting to Exhale|1995|Comedy|Drama|Romance|
+|      5|Father of the Bri...|1995|              Comedy|
+|      6|                Heat|1995|Action|Crime|Thri...|
+|      7|             Sabrina|1995|      Comedy|Romance|
+|      8|        Tom and Huck|1995|  Adventure|Children|
+|      9|        Sudden Death|1995|              Action|
+|     10|           GoldenEye|1995|Action|Adventure|...|
+|     11|American Presiden...|1995|Comedy|Drama|Romance|
+|     12|Dracula: Dead and...|1995|       Comedy|Horror|
+|     13|               Balto|1995|Adventure|Animati...|
+|     14|               Nixon|1995|               Drama|
+|     15|    Cutthroat Island|1995|Action|Adventure|...|
+|     16|              Casino|1995|         Crime|Drama|
+|     17|Sense and Sensibi...|1995|       Drama|Romance|
+|     18|          Four Rooms|1995|              Comedy|
+|     19|Ace Ventura: When...|1995|              Comedy|
+|     20|         Money Train|1995|Action|Comedy|Cri...|
++-------+--------------------+----+--------------------+
+only showing top 20 rows
+
+```
+```
+links_df=spark.read.csv('links.txt',inferSchema=True,header=True)
+links_df.printSchema()
+root
+ |-- movieId: integer (nullable = true)
+ |-- imdbId: integer (nullable = true)
+ |-- tmdbId: integer (nullable = true)
+
+```
+
+```
+## DATA TRAIN TEST SPLIT
+```
+
+```
+
+
+
+
+```
+
+
+
+
+
 ```
 4. The command is run to start a session over Spark. To use the data, 
 ```
