@@ -78,6 +78,7 @@ print("Table Names:")
 print(tabulate([i for i in result],tablefmt="grid"))
 
 query was succesfully!!
+
 Table Names:
 +---------+
 | movies  |
@@ -185,6 +186,7 @@ Number of unique values for each table
 query = "SELECT COUNT(*) FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"
 result=execute_query(connect,query)                                                      #row number after inner join 
 print(tabulate([list(result)[0]],tablefmt="grid"))                                       #I setup relation to tables on movieId's
+
 query was succesfully!!
 +--------+
 | 100023 |
