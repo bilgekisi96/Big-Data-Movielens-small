@@ -90,7 +90,7 @@ Table Names:
 | tags    |
 +---------+
 ```
-### 6.Investigating table row numbers in Database  
+### 6.Investigating tables row numbers in Database  
 ```
 query = "SELECT name FROM sqlite_master WHERE type = 'table'"  #Table names in database There are 4 table in database 
 result=execute_query(connect,query)
