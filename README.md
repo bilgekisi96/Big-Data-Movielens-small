@@ -411,7 +411,7 @@ spark = SparkSession \
     .config("spark.some.config.option", "some-value") \
     .getOrCreate()                                                              #Evaluating to Spark session
 ```
-```
+
 ### DATA ANALYSIS AND EXPLORATION
 
 ```
