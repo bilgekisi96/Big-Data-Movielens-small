@@ -394,7 +394,7 @@ plt.show()
 
 ```
 from pyspark.sql import SparkSession
-from pyspark.sql import SQLContext                                            #import to libraries
+from pyspark.sql import SQLContext                                                        #import to libraries
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.tuning import CrossValidator
 from pyspark.ml.recommendation import ALS
@@ -411,20 +411,20 @@ spark = SparkSession \
     .builder \
     .appName("moive analysis") \
     .config("spark.some.config.option", "some-value") \
-    .getOrCreate()                                                              #Evaluating to Spark session
-```
+    .getOrCreate()                                                                       #Evaluating to Spark session
+``` 
 
 ### DATA ANALYSIS AND EXPLORATION
 
 ```
 movies_df = spark.read.load("movies.txt", format='csv', header = True)
-ratings_df = spark.read.load("ratings.txt", format='csv', header = True)        #Taking tables 
+ratings_df = spark.read.load("ratings.txt", format='csv', header = True)                 #Taking tables 
 links_df = spark.read.load("links.txt", format='csv', header = True)
 tags_df = spark.read.load("tags.txt", format='csv', header = True)
 ```
 
 ```
-print(type(movies_df))                                                          #movies table row count
+print(type(movies_df))                                                                    #movies table row count
 movies_df.count()
 <class 'pyspark.sql.dataframe.DataFrame'>
 
@@ -433,7 +433,7 @@ movies_df.count()
 ```
 
 ```
-movies_df.show(5)                                                               #movies table first 5 rows
+movies_df.show(5)                                                                          #movies table first 5 rows
 movies_df.createOrReplaceTempView("movies_df")
 display (spark.sql("SELECT * FROM movies_df limit 5"))
 
@@ -452,7 +452,7 @@ DataFrame[movieId: string, title: string, year: string, genres: string]
 ```
 
 ```
-ratings_df.show(5)                                                              #ratings table for 5 rows
+ratings_df.show(5)                                                                          #ratings table for 5 rows
 ratings_df.createOrReplaceTempView("ratings_df")
 display (spark.sql("SELECT * FROM ratings_df limit 5"))
 
@@ -473,7 +473,7 @@ DataFrame[userId: string, movieId: string, rating: string, timestamp: string]
 
 ```
 links_df.show(5)
-links_df.createOrReplaceTempView("links_df")                                    #links table first 5 rows
+links_df.createOrReplaceTempView("links_df")                                                 #links table first 5 rows
 display (spark.sql("SELECT * FROM links_df limit 5"))
 
 +-------+-------+------+
@@ -492,7 +492,7 @@ DataFrame[movieId: string, imdbId: string, tmdbId: string]
 ```
 ```
 tmp1 = ratings_df.groupBy("userID").count().toPandas()['count'].min()             
-tmp2 = ratings_df.groupBy("movieId").count().toPandas()['count'].min()                  #How many movies rated by count of person
+tmp2 = ratings_df.groupBy("movieId").count().toPandas()['count'].min()                              #How many movies rated by count of person
 
 print('For the users that rated movies and the movies that were rated:')
 print('Minimum number of ratings per user is {}'.format(tmp1))
@@ -506,7 +506,7 @@ Minimum number of ratings per movie is 1
 ```
 
 ```
-tmp1 = sum(ratings_df.groupBy("movieId").count().toPandas()['count'] == 1)
+tmp1 = sum(ratings_df.groupBy("movieId").count().toPandas()['count'] == 1)                                 #2808 out of 8552 movies are rated only one user
 tmp2 = ratings_df.select('movieId').distinct().count()
 print('{} out of {} movies are rated by only one user'.format(tmp1, tmp2))
 
@@ -515,16 +515,16 @@ print('{} out of {} movies are rated by only one user'.format(tmp1, tmp2))
 ```
 
 ```
-sc = spark.sparkContext
+sc = spark.sparkContext                                                                                     #Sql spark Context conn.
 sqlContext=SQLContext(sc)
 ```
 
 ```
-ratings_df=spark.read.csv("ratings.txt",inferSchema=True,header=True) #columns value types in ratings table
+ratings_df=spark.read.csv("ratings.txt",inferSchema=True,header=True)                                       #columns value types in ratings table
 ratings_df.printSchema()
 
 root
- |-- userId: integer (nullable = true)
+ |-- userId: integer (nullable = true)                                                                     
  |-- movieId: integer (nullable = true)
  |-- rating: double (nullable = true)
  |-- timestamp: integer (nullable = true)
@@ -532,7 +532,7 @@ root
 ```
 
 ```
-ratings_df.show()                           #taking ratings table
+ratings_df.show()                                                                                           #taking ratings table
 
 +------+-------+------+---------+
 |userId|movieId|rating|timestamp|
@@ -563,7 +563,7 @@ only showing top 20 rows
 ```
 
 ```
-movies_df=spark.read.csv('movies.txt',inferSchema=True,header=True)  #Table value types 
+movies_df=spark.read.csv('movies.txt',inferSchema=True,header=True)                                             # movies table value types 
 movies_df.printSchema()
 
 root
@@ -605,7 +605,7 @@ only showing top 20 rows
 
 ```
 ```
-links_df=spark.read.csv('links.txt',inferSchema=True,header=True)
+links_df=spark.read.csv('links.txt',inferSchema=True,header=True)                                          # Links table value types 
 links_df.printSchema()
 root
  |-- movieId: integer (nullable = true)
@@ -617,12 +617,12 @@ root
 ## DATA TRAIN TEST SPLIT
 
 ```
-training_df,validation_df = ratings_df.randomSplit([0.8,0.2])  #split to data for train and test
+training_df,validation_df = ratings_df.randomSplit([0.8,0.2])                                           #split to data for train and test
 
 ```
 
 ```
-iterations=10                                                 #model parameters choosed best parameters for taking best solutions
+iterations=10                                                                          #model parameters choosed best parameters for taking best solutions
 regularization_parameter=0.1
 rank=4
 error=[]
@@ -639,17 +639,17 @@ err=0
 ```
 als = ALS(maxIter=iterations,regParam=regularization_parameter,rank=5,userCol="userId",itemCol="movieId",ratingCol="rating")
   
-model = als.fit(training_df)                                           #training data trained by als model
+model = als.fit(training_df)                                                                 #training data trained by als model
 
-predictions = model.transform(validation_df)                           #and tested model with test data
+predictions = model.transform(validation_df)                                                 #and tested model with test data
 
 new_predictions = predictions.filter(col('prediction')!=np.nan)
 
 evaluator = RegressionEvaluator(metricName="rmse",labelCol="rating",predictionCol="prediction") 
-                                                                       #we look root mean square error for regression model 
+                                                                                            #we look root mean square error for regression model 
 rmse = evaluator.evaluate(new_predictions)
 
-print("Root Mean Square Error= "+str(rmse))                            #taking  RMSE scores 
+print("Root Mean Square Error= "+str(rmse))                                                   #taking  RMSE scores 
 
 Root Mean Square Error= 0.9390473765159149
 ```
