@@ -66,51 +66,63 @@ def execute_query(connection,query):                 #this function is execution
 ```
 ```
 connect=create_db_connection("movielens-small.db")
+
 Database Connection Successfully!!
+
 ```
 ### 5.The command take to table names from Database 
 ```
-query = "SELECT name FROM sqlite_master WHERE type = 'table'"        #Table names in database There are 4 table in database 
+query = "SELECT name FROM sqlite_master WHERE type = 'table'"  #Table names in database There are 4 table in database 
 result=execute_query(connect,query)
-table_names=[]
+print("Table Names:")
+print(tabulate([i for i in result],tablefmt="grid"))
 
-for i in result:
-    print("Table Name:",i)
-    table_names.append(i[0])
-    
 query was succesfully!!
-Table Name: ('movies',)
-Table Name: ('ratings',)
-Table Name: ('links',)
-Table Name: ('tags',)
+Table Names:
++---------+
+| movies  |
++---------+
+| ratings |
++---------+
+| links   |
++---------+
+| tags    |
++---------+
 ```
 ### 6.Investigating table row numbers in Database  
 ```
-plt.figure(figsize=(8,8))
+query = "SELECT name FROM sqlite_master WHERE type = 'table'"  #Table names in database There are 4 table in database 
+result=execute_query(connect,query)
+table_names=[i[0] for i in result]
 nums,labels=[],[]
-
 for i in table_names:                                            #Tables row numbers
     query="SELECT * FROM {cha}".format(cha=i)
     result=execute_query(connect,query) 
     rownum=len([j for j in result])
-    print("{table} Table Row Number --> {num} ".format(table=i,num=rownum))
     nums.append(rownum)
     labels.append(i)
+print()
+print("Tables Row Numbers")
+print(tabulate([[i for i in labels],[j for j in nums]],tablefmt='grid'))
+query was succesfully!!
+query was succesfully!!
+query was succesfully!!
+query was succesfully!!
+query was succesfully!!
+
+Tables Row Numbers
++--------+---------+-------+------+
+| movies | ratings | links | tags |
++--------+---------+-------+------+
+| 8570   | 100023  | 8570  | 2488 |
++--------+---------+-------+------+
     
+plt.figure(figsize=(8,8))
 #define Seaborn color palette to use
 colors = sns.color_palette('pastel')[0:5]
 plt.title("TABLES ROW NUMBERS")
 plt.pie(nums, labels = labels, colors = colors, autopct='%.0f%%')
 plt.show()
-
-query was succesfully!!
-movies Table Row Number --> 8570 
-query was succesfully!!
-ratings Table Row Number --> 100023 
-query was succesfully!!
-links Table Row Number --> 8570 
-query was succesfully!!
-tags Table Row Number --> 2488 
 
 ```
 ![alt text](https://github.com/bilgekisi96/Big-Data-Movielens-small/blob/main/indir.png)
@@ -123,53 +135,75 @@ tags Table Row Number --> 2488
 for i in table_names:                                            #Check to Null values in Tables 
     query="SELECT * FROM {cha}".format(cha=i)
     result=execute_query(connect,query) 
-    print(["There are Null" if False in [False if (j=="NULL" or j==None) else True for j in result for k in j] else "There are not NULL value in table"])
+    print(tabulate([["There are Null" if False in [False if (j=="NULL" or j==None) else True for j in result for k in j] else "There are not NULL value in table"]],tablefmt='grid'))
     
 query was succesfully!!
-['There are not NULL value in table']
++-----------------------------------+
+| There are not NULL value in table |
++-----------------------------------+
 query was succesfully!!
-['There are not NULL value in table']
++-----------------------------------+
+| There are not NULL value in table |
++-----------------------------------+
 query was succesfully!!
-['There are not NULL value in table']
++-----------------------------------+
+| There are not NULL value in table |
++-----------------------------------+
 query was succesfully!!
-['There are not NULL value in table']
++-----------------------------------+
+| There are not NULL value in table |
++-----------------------------------+
 ```
 
 ### 8.Looking unique values in tables 
 ```
+keys,values = [],[]
 for i in table_names:                                                                             
-    query="SELECT COUNT(DISTINCT movieId) FROM {cha}".format(cha=i)                              
-    result=execute_query(connect,query)                                                             #Checking unique movieIDs in
-    print("{name} table unique features--> {result}".format(name=i,result=tuple(result)[0][0]))     #tables
+    query="SELECT COUNT(DISTINCT movieId) FROM {cha}".format(cha=i)
+    result=execute_query(connect,query)                                                          #Checking unique movieIDs in tables
+    result=tuple(result)[0][0]
+    values.append(i)
+    keys.append(result)
+print()
+print("Number of unique values for each table")
+print(tabulate([values,keys],tablefmt="grid"))                                                                                                
+query was succesfully!!
+query was succesfully!!
+query was succesfully!!
+query was succesfully!!
 
-query was succesfully!!
-movies table unique features--> 8570
-query was succesfully!!
-ratings table unique features--> 8552
-query was succesfully!!
-links table unique features--> 8570
-query was succesfully!!
-tags table unique features--> 672
+Number of unique values for each table
++--------+---------+-------+------+
+| movies | ratings | links | tags |
++--------+---------+-------+------+
+| 8570   | 8552    | 8570  | 672  |
++--------+---------+-------+------+
 ```
 
 ### 9.First join process on movieIds for relational movielens database joined 2 table movies and ratings Also check to row number
 ```
 query = "SELECT COUNT(*) FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"
-result=execute_query(connect,query)                                                    #row number after inner join 
-print(tuple(result)[0][0])                                                             #I setup relation to tables on movieId's
+result=execute_query(connect,query)                                                      #row number after inner join 
+print(tabulate([list(result)[0]],tablefmt="grid"))                                       #I setup relation to tables on movieId's
 query was succesfully!!
-
-100023
++--------+
+| 100023 |
++--------+
 ```
 ### 10.After inner join process checked to column names
 ```
 query = "SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId"    #I made INNER JOIN for arrive to genres colunm
 result=execute_query(connect,query)                                               #columns names between two tables  
-
-set([i[0] for i in result.description])
+print("Column names after join process")
+col_nam=[]
+for i in result.description:col_nam.append(i[0])
+print(tabulate([col_nam],tablefmt="grid"))
 query was succesfully!!
 
-{'genres', 'movieId', 'rating', 'timestamp', 'title', 'userId', 'year'}
+Column names after join process
++---------+-------+------+--------+--------+---------+--------+-----------+
+| movieId | title | year | genres | userId | movieId | rating | timestamp |
++---------+-------+------+--------+--------+---------+--------+-----------+
 
 ```
 ```
@@ -190,29 +224,51 @@ query was succesfully!!
 ### Missing values between two table movies and ratings
 ```
 query = "SELECT a.movieId,b.movieId,b.userId,b.rating,b.timestamp FROM movies a LEFT JOIN ratings b ON b.movieId = a.movieId WHERE b.rating IS NULL ; "
-result=execute_query(connect,query)                  
-
-for i in result:print(i)                            
+result=execute_query(connect,query)                   #There are 18 NULL values between movies and ratings 
+print()                                               #This values there are in movies table but there arent in ratings table 
+print("Null values between 2 table")
+print(tabulate([i for i in result],missingval="None",tablefmt="grid"))
 
 query was succesfully!!
-(133, None, None, None, None)
-(654, None, None, None, None)
-(2499, None, None, None, None)
-(6328, None, None, None, None)
-(7541, None, None, None, None)
-(8574, None, None, None, None)
-(8765, None, None, None, None)
-(31408, None, None, None, None)
-(31687, None, None, None, None)
-(33340, None, None, None, None)
-(49422, None, None, None, None)
-(54248, None, None, None, None)
-(59549, None, None, None, None)
-(60020, None, None, None, None)
-(60382, None, None, None, None)
-(68486, None, None, None, None)
-(70695, None, None, None, None)
-(86487, None, None, None, None)
+
+Null values between 2 table
++-------+------+------+------+------+
+|   133 | None | None | None | None |
++-------+------+------+------+------+
+|   654 | None | None | None | None |
++-------+------+------+------+------+
+|  2499 | None | None | None | None |
++-------+------+------+------+------+
+|  6328 | None | None | None | None |
++-------+------+------+------+------+
+|  7541 | None | None | None | None |
++-------+------+------+------+------+
+|  8574 | None | None | None | None |
++-------+------+------+------+------+
+|  8765 | None | None | None | None |
++-------+------+------+------+------+
+| 31408 | None | None | None | None |
++-------+------+------+------+------+
+| 31687 | None | None | None | None |
++-------+------+------+------+------+
+| 33340 | None | None | None | None |
++-------+------+------+------+------+
+| 49422 | None | None | None | None |
++-------+------+------+------+------+
+| 54248 | None | None | None | None |
++-------+------+------+------+------+
+| 59549 | None | None | None | None |
++-------+------+------+------+------+
+| 60020 | None | None | None | None |
++-------+------+------+------+------+
+| 60382 | None | None | None | None |
++-------+------+------+------+------+
+| 68486 | None | None | None | None |
++-------+------+------+------+------+
+| 70695 | None | None | None | None |
++-------+------+------+------+------+
+| 86487 | None | None | None | None |
++-------+------+------+------+------+
 
 ```
 ### 11. Playling with subquaries cleaning and prepared genres column 
@@ -236,50 +292,84 @@ query was succesfully!!
 
 ### 1.Question : Write a SQL query to create a dataframe with including userid, movieid, genre and rating
 ```
-query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId LIMIT 5"
-result=execute_query(connect,query)  
-
-for i in result:print(i)
+query = "SELECT a.userId,a.movieId,a.rating,b.genres FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId LIMIT 10"
+result=execute_query(connect,query)   # userıd movieıd rating and genres dataframe 
+res = [list(i[:5]) for i in result]
+values =[["userId","movieId","rating","genres"]]+res
+print(tabulate(values,tablefmt="grid",headers="firstrow"))
 
 query was succesfully!!
-(7, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
-(10, 1, 4.0, 'Adventure|Animation|Children|Comedy|Fantasy')
-(13, 1, 4.5, 'Adventure|Animation|Children|Comedy|Fantasy')
-(16, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
-(21, 1, 5.0, 'Adventure|Animation|Children|Comedy|Fantasy')
++----------+-----------+----------+---------------------------------------------+
+|   userId |   movieId |   rating | genres                                      |
++==========+===========+==========+=============================================+
+|        7 |         1 |      5   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       10 |         1 |      4   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       13 |         1 |      4.5 | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       16 |         1 |      5   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       21 |         1 |      5   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       22 |         1 |      4   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       27 |         1 |      4   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       30 |         1 |      5   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       31 |         1 |      3   | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
+|       36 |         1 |      2.5 | Adventure|Animation|Children|Comedy|Fantasy |
++----------+-----------+----------+---------------------------------------------+
 
 ```
 ### 2.Question : Count ratings for each movie, and list top 5 movies with the highest value
 ```
 query = "SELECT COUNT(rating) as terra,title FROM (SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId) GROUP BY title ORDER BY terra DESC LIMIT 5;"
 result=execute_query(connect,query)
-
-for i in result:print(i)
+res = [list(i[:5]) for i in result]
+values =[["Count ratings","title"]]+res
+print(tabulate(values,tablefmt="grid",headers="firstrow"))
 
 query was succesfully!!
-(337, 'Silence of the Lambs, The')
-(328, 'Shawshank Redemption, The')
-(327, 'Pulp Fiction')
-(324, 'Jurassic Park')
-(318, 'Forrest Gump')
++-----------------+---------------------------+
+|   Count ratings | title                     |
++=================+===========================+
+|             337 | Silence of the Lambs, The |
++-----------------+---------------------------+
+|             328 | Shawshank Redemption, The |
++-----------------+---------------------------+
+|             327 | Pulp Fiction              |
++-----------------+---------------------------+
+|             324 | Jurassic Park             |
++-----------------+---------------------------+
+|             318 | Forrest Gump              |
++-----------------+---------------------------+
 ```
 ### 3.Question: Find and list top 5 most rated genres
 ```
 query = "SELECT COUNT(rating) as terra,genres FROM (SELECT * FROM movies b INNER JOIN ratings a ON a.movieId = b.movieId INNER JOIN links c ON a.movieId = c.movieId) GROUP BY genres ORDER BY terra DESC LIMIT 5"
 result=execute_query(connect,query)
 keys,values=[],[]
-
-for i in result:
-    keys.append(i[0])
-    values.append(i[1])
-    print(i)
+res = [list(i[:5]) for i in result]
+values =[["rating","genres"]]+res
+print(tabulate(values,tablefmt="grid",headers="firstrow"))
 
 query was succesfully!!
-(7008, 'Drama')
-(6396, 'Comedy')
-(3877, 'Comedy|Romance')
-(3121, 'Drama|Romance')
-(3000, 'Comedy|Drama')
++----------+----------------+
+|   rating | genres         |
++==========+================+
+|     7008 | Drama          |
++----------+----------------+
+|     6396 | Comedy         |
++----------+----------------+
+|     3877 | Comedy|Romance |
++----------+----------------+
+|     3121 | Drama|Romance  |
++----------+----------------+
+|     3000 | Comedy|Drama   |
++----------+----------------+
 ```
 ```
 fig, ax = plt.subplots(figsize=(12,6))
