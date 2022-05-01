@@ -489,11 +489,13 @@ DataFrame[movieId: string, imdbId: string, tmdbId: string]
 
 ```
 ```
-tmp1 = ratings_df.groupBy("userID").count().toPandas()['count'].min()
-tmp2 = ratings_df.groupBy("movieId").count().toPandas()['count'].min()
+tmp1 = ratings_df.groupBy("userID").count().toPandas()['count'].min()             
+tmp2 = ratings_df.groupBy("movieId").count().toPandas()['count'].min()                  #How many movies rated by count of person
+
 print('For the users that rated movies and the movies that were rated:')
 print('Minimum number of ratings per user is {}'.format(tmp1))
 print('Minimum number of ratings per movie is {}'.format(tmp2))
+
 For the users that rated movies and the movies that were rated:
 
 Minimum number of ratings per user is 20
@@ -612,387 +614,374 @@ root
 
 ## DATA TRAIN TEST SPLIT
 
-
-
-
-
+```
+training_df,validation_df = ratings_df.randomSplit([0.8,0.2])  #split to data for train and test
 
 ```
 
 ```
-4. The command is run to start a session over Spark. To use the data, 
-```
-spark = SparkSession.builder.appName('MovieLens').getOrCreate()
-
-ratings = spark.read.option("header", "true").csv("ml-25m/ratings.csv")
-ratings.show(5)
-+------+-------+------+----------+
-|userId|movieId|rating| timestamp|
-+------+-------+------+----------+
-|     1|    296|   5.0|1147880044|
-|     1|    306|   3.5|1147868817|
-|     1|    307|   5.0|1147868828|
-|     1|    665|   5.0|1147878820|
-|     1|    899|   3.5|1147868510|
-+------+-------+------+----------+
-only showing top 5 rows
-movies = spark.read.option("header", "true").csv("ml-25m/movies.csv")
-movies.show(5)
-+-------+--------------------+--------------------+
-|movieId|               title|              genres|
-+-------+--------------------+--------------------+
-|      1|    Toy Story (1995)|Adventure|Animati...|
-|      2|      Jumanji (1995)|Adventure|Childre...|
-|      3|Grumpier Old Men ...|      Comedy|Romance|
-|      4|Waiting to Exhale...|Comedy|Drama|Romance|
-|      5|Father of the Bri...|              Comedy|
-+-------+--------------------+--------------------+
-only showing top 5 rows
-
-```
-6. When using sql directly over the session, the "movies" "ratings" variables defined to pull the data are converted into a sql table. Now you can start working on the data.
-```
-movies.createOrReplaceTempView("Movies")
-ratings.createOrReplaceTempView("Ratings")
-```
-## 1.Question - Write a SQL query to create a dataframe with including userid, movieid, genre and rating
-
-1. In this question, data can be retrieved in 2 different ways. Since data is requested from 2 separate tables, a join is required. First, **Movies** and **Ratings** tables can be linked to each other using inner join. Or tables can be linked to each other in the **where** field as in the 2nd example.
-```
-dataframe=spark.sql("select r.userId,m.movieId,m.genres,r.rating from Movies m inner join Ratings r on r.movieId=m.movieId").show()
-+------+-------+--------------------+------+
-|userId|movieId|              genres|rating|
-+------+-------+--------------------+------+
-|     1|    296|Comedy|Crime|Dram...|   5.0|
-|     1|    306|               Drama|   3.5|
-|     1|    307|               Drama|   5.0|
-|     1|    665|    Comedy|Drama|War|   5.0|
-|     1|    899|Comedy|Musical|Ro...|   3.5|
-|     1|   1088|Drama|Musical|Rom...|   4.0|
-|     1|   1175|Comedy|Drama|Romance|   3.5|
-|     1|   1217|           Drama|War|   3.5|
-|     1|   1237|               Drama|   5.0|
-|     1|   1250| Adventure|Drama|War|   4.0|
-|     1|   1260|Crime|Film-Noir|T...|   3.5|
-|     1|   1653|Drama|Sci-Fi|Thri...|   4.0|
-|     1|   2011|Adventure|Comedy|...|   2.5|
-|     1|   2012|Adventure|Comedy|...|   2.5|
-|     1|   2068|Drama|Fantasy|Mys...|   2.5|
-|     1|   2161|Adventure|Childre...|   3.5|
-|     1|   2351|               Drama|   4.5|
-|     1|   2573|       Drama|Musical|   4.0|
-|     1|   2632|Adventure|Drama|M...|   5.0|
-|     1|   2692|        Action|Crime|   5.0|
-+------+-------+--------------------+------+
-only showing top 20 rows
-
-dataframe=spark.sql("select r.userId,m.movieId,m.genres,r.rating from Movies m,Ratings r where r.movieId=m.movieId").show()
-+------+-------+--------------------+------+
-|userId|movieId|              genres|rating|
-+------+-------+--------------------+------+
-|     1|    296|Comedy|Crime|Dram...|   5.0|
-|     1|    306|               Drama|   3.5|
-|     1|    307|               Drama|   5.0|
-|     1|    665|    Comedy|Drama|War|   5.0|
-|     1|    899|Comedy|Musical|Ro...|   3.5|
-|     1|   1088|Drama|Musical|Rom...|   4.0|
-|     1|   1175|Comedy|Drama|Romance|   3.5|
-|     1|   1217|           Drama|War|   3.5|
-|     1|   1237|               Drama|   5.0|
-|     1|   1250| Adventure|Drama|War|   4.0|
-|     1|   1260|Crime|Film-Noir|T...|   3.5|
-|     1|   1653|Drama|Sci-Fi|Thri...|   4.0|
-|     1|   2011|Adventure|Comedy|...|   2.5|
-|     1|   2012|Adventure|Comedy|...|   2.5|
-|     1|   2068|Drama|Fantasy|Mys...|   2.5|
-|     1|   2161|Adventure|Childre...|   3.5|
-|     1|   2351|               Drama|   4.5|
-|     1|   2573|       Drama|Musical|   4.0|
-|     1|   2632|Adventure|Drama|M...|   5.0|
-|     1|   2692|        Action|Crime|   5.0|
-+------+-------+--------------------+------+
-only showing top 20 rows
-```
-
-```
-dataframe=spark.sql("select r.userId,m.movieId,m.genres,r.rating from Movies m,Ratings r where r.movieId=m.movieId").show()
-```
-
-## 2.Question - Count ratings for each movie, and list top 5 movies with the highest value
-
-```
-spark.sql("""select count(r.rating) CountRatings,m.title as MovieName from Movies m 
-inner join Ratings r on r.movieId=m.movieId 
-group by m.title order by count(r.rating) desc limit 5""").show()
-+------------+--------------------+
-|CountRatings|           MovieName|
-+------------+--------------------+
-|       81491| Forrest Gump (1994)|
-|       81482|Shawshank Redempt...|
-|       79672| Pulp Fiction (1994)|
-|       74127|Silence of the La...|
-|       72674|  Matrix, The (1999)|
-+------------+--------------------+
-```
-## 3.Question - Find and list top 5 most rated genres
-```
-sspark.sql("""select r.rating MostRated,m.genres from Movies m 
-inner join Ratings r on r.movieId=m.movieId  
-order by r.rating desc limit 5""").show()
-
-+---------+--------------------+
-|MostRated|              genres|
-+---------+--------------------+
-|      5.0|Adventure|Drama|S...|
-|      5.0|      Comedy|Romance|
-|      5.0|      Horror|Mystery|
-|      5.0|              Horror|
-|      5.0|Drama|Horror|Thri...|
-+---------+--------------------+
+iterations=10                                                 #model parameters choosed best parameters for taking best solutions
+regularization_parameter=0.1
+rank=4
+error=[]
+err=0
 
 ```
 
-## 4.Question - By using timestamp from ratings table, provide top 5 most frequent users within a week
-In this question, we convert timestamp to date for use.
-```
-spark.sql("""select count(*) Frequentusers,userId from Movies m 
-inner join Ratings r on r.movieId=m.movieId 
-where CAST(TO_DATE(FROM_UNIXTIME(r.timestamp))as date)>CAST(TO_DATE(FROM_UNIXTIME(r.timestamp))as date) - interval '1' week 
-group by userId 
-order by count(*) desc   limit 5""").show()
-```
-## 5.Question -Calculate average ratings for each genre, and plot average ratings of top 10 genres with descending order
+### ALTERNATING LEAST SQUARES RECOMMENDED MODEL
 
-If anyone uses the seaborn library with this data, has to convert to Pandas.
-```
-table= spark.sql("""
 
-select m.genres,avg(r.rating) as AvgOfRatings  from movies m
-inner join Ratings r on r.movieId=m.movieId
-group by m.genres order by AvgOfRatings desc limit 10""")
-
-table.show()
-plot=table.toPandas()
-+--------------------+------------+
-|              genres|AvgOfRatings|
-+--------------------+------------+
-|Comedy|Crime|Dram...|         5.0|
-|Action|Drama|Myst...|         5.0|
-|Adventure|Drama|F...|         5.0|
-|Children|Comedy|D...|         5.0|
-|Fantasy|Horror|Ro...|         5.0|
-|Adventure|Fantasy...|         5.0|
-|Action|Comedy|Mys...|         5.0|
-|Adventure|Drama|R...|         5.0|
-|Animation|Crime|M...|       4.625|
-|Action|Children|D...|         4.5|
-+--------------------+------------+
+#### Using ALS(Alternating Least squares) recommended regression model for data 
+#### Firstly model trained with train data and then model tested any see before with test data After that Take to rmse score by using evaluator
 
 ```
+als = ALS(maxIter=iterations,regParam=regularization_parameter,rank=5,userCol="userId",itemCol="movieId",ratingCol="rating")
+  
+model = als.fit(training_df)                                           #training data trained by als model
+
+predictions = model.transform(validation_df)                           #and tested model with test data
+
+new_predictions = predictions.filter(col('prediction')!=np.nan)
+
+evaluator = RegressionEvaluator(metricName="rmse",labelCol="rating",predictionCol="prediction") 
+                                                                       #we look root mean square error for regression model 
+rmse = evaluator.evaluate(new_predictions)
+
+print("Root Mean Square Error= "+str(rmse))                            #taking  RMSE scores 
+
+Root Mean Square Error= 0.9390473765159149
 ```
-sns.barplot(x="AvgOfRatings",y = plot.genres,data=plot)
+
+#### Taking new scores from mixing data data 
 ```
-
-# Task-2 Recommender Design Model
-
-Here, the previously developed Lightfm library will be used. Since there is ready-made movielens-small database information in the Lightfm library, data can be drawn directly thanks to the library.
-
-
-```
-import numpy as np
-
-from lightfm.datasets import fetch_movielens
-
-movielens = fetch_movielens()
-
-```
-This gives us a dictionary with the following fields:
-```
-for key, value in movielens.items():
-    print(key, type(value), value.shape)
+for rank in range(4,10):
+    als = ALS(maxIter=iterations,regParam=regularization_parameter,rank=rank,userCol="userId",itemCol="movieId",ratingCol="rating")
+    model = als.fit(training_df)
+    predictions = model.transform(validation_df)
+    new_predictions = predictions.filter(col('prediction')!=np.nan)
+    evaluator = RegressionEvaluator(metricName="rmse",labelCol="rating",predictionCol="prediction")
+    rmse = evaluator.evaluate(new_predictions)
+    print("Root Mean Square Error= "+str(rmse))    
     
-('test', <class 'scipy.sparse.coo.coo_matrix'>, (943, 1682))
-('item_features', <class 'scipy.sparse.csr.csr_matrix'>, (1682, 1682))
-('train', <class 'scipy.sparse.coo.coo_matrix'>, (943, 1682))
-('item_labels', <type 'numpy.ndarray'>, (1682,))
-('item_feature_labels', <type 'numpy.ndarray'>, (1682,))
+Root Mean Square Error= 0.9372678988760661
+Root Mean Square Error= 0.9390473765159146
+Root Mean Square Error= 0.9388196042742588
+Root Mean Square Error= 0.9439639521307659
+Root Mean Square Error= 0.9401075667945087
+Root Mean Square Error= 0.9419780113792817 
 
-train = movielens['train']
-test = movielens['test']
 ```
-The train and test elements are the most important: they contain the raw rating data, split into a train and a test set. Each row represents a user, and each column an item. Entries are ratings from 1 to 5.
-
-## Fitting models
-Now let's train a BPR model and look at its accuracy.
-
-We'll use two metrics of accuracy: precision@k and ROC AUC. Both are ranking metrics: to compute them, we'll be constructing recommendation lists for all of our users, and checking the ranking of known positive movies. For precision at k we'll be looking at whether they are within the first k results on the list; for AUC, we'll be calculating the probability that any known positive is higher on the list than a random negative example.
+#### Taking Predictions by trained model
 ```
-from lightfm import LightFM
-from lightfm.evaluation import precision_at_k
-from lightfm.evaluation import auc_score
+predictions.show(10)
++------+-------+------+---------+----------+
+|userId|movieId|rating|timestamp|prediction|
++------+-------+------+---------+----------+
+|     1|    858|   5.0|980730742|  3.747875|
+|     1|    451|   1.0|980731789|       NaN|
+|     1|   1201|   4.0|980730742|  3.290426|
+|     1|   1034|   3.0|980731208| 2.7763813|
+|     1|     22|   3.0|980731380| 3.1554518|
+|     1|   1197|   4.0|980730769| 3.8877766|
+|     1|    590|   2.0|980732165|   3.03294|
+|     1|    457|   4.0|980730816| 3.7875729|
+|     1|    608|   5.0|980732037|  3.138443|
+|     1|    996|   2.0|980732235| 2.7168202|
++------+-------+------+---------+----------+
+only showing top 10 rows
 
-model = LightFM(learning_rate=0.05, loss='bpr')
-model.fit(train, epochs=10)
-
-train_precision = precision_at_k(model, train, k=10).mean()
-test_precision = precision_at_k(model, test, k=10).mean()
-
-train_auc = auc_score(model, train).mean()
-test_auc = auc_score(model, test).mean()
-
-print('Precision: train %.2f, test %.2f.' % (train_precision, test_precision))
-print('AUC: train %.2f, test %.2f.' % (train_auc, test_auc))
-Precision: train 0.59, test 0.10.
-AUC: train 0.90, test 0.86.
+```
+#### Implemented grid search to model with grid search parameters and this model used for every part of cross validation it is great idea for scores 
+#### but the results are not changed for data 
 
 ```
 
-The WARP model, on the other hand, optimises for precision@k---we should expect its performance to be better on precision.
-```
-model = LightFM(learning_rate=0.05, loss='warp')
+from pyspark.ml.tuning import *
 
-model.fit_partial(train, epochs=10)
+from pyspark.ml.tuning import ParamGridBuilder
+#Grid Search and cross validation for our model  
+als1 = ALS(maxIter=iterations,regParam=regularization_parameter,rank=rank,userCol="userId",itemCol="movieId",ratingCol="rating")
+paramGrid = ParamGridBuilder()\
+.addGrid(als1.regParam,[0.1,0.01,0.18])\
+.addGrid(als1.rank,range(4,10))\
+.build()
 
-train_precision = precision_at_k(model, train, k=10).mean()
-test_precision = precision_at_k(model, test, k=10).mean()
-
-train_auc = auc_score(model, train).mean()
-test_auc = auc_score(model, test).mean()
-
-print('Precision: train %.2f, test %.2f.' % (train_precision, test_precision))
-print('AUC: train %.2f, test %.2f.' % (train_auc, test_auc))
-```
-Modelling result is :
-```
-Precision: train 0.61, test 0.11.
-AUC: train 0.93, test 0.90.
+evaluator=RegressionEvaluator(metricName="rmse",labelCol="rating",predictionCol="prediction")
+crossval=CrossValidator(estimator=als1,estimatorParamMaps=paramGrid,evaluator=evaluator,numFolds=5)
+cvModel=crossval.fit(training_df)
 
 ```
-# Task – 3 Text Analysis:
-
-It also means sentiment analysis.
-In order to perform this analysis, the following libraries must be imported.
-If there are no libraries, the libraries are installed with the `!pip install` command as shown earlier. It is then imported. If the latest version of Visual Studio Code ++ is not installed on your PC, you will receive an error in the installation of some libraries.
-The path to be followed for installation can be followed from the page https://docs.microsoft.com/tr-tr/cpp/build/vscpp-step-0-installation?view=msvc-170.
-
-## Importing libraries
-
-```
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import nltk
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import LabelBinarizer
-from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
-from wordcloud import WordCloud,STOPWORDS
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize,sent_tokenize
-from bs4 import BeautifulSoup
-import spacy
-import re,string,unicodedata
-from nltk.tokenize.toktok import ToktokTokenizer
-from nltk.stem import LancasterStemmer,WordNetLemmatizer
-from sklearn.linear_model import LogisticRegression,SGDClassifier
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.svm import SVC
-from textblob import TextBlob
-from textblob import Word
-from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
-import os
-import warnings
-```
-The nltk library is an important tool in this analysis.
-nltk: Natural Language Toolkit; It is an open-source library developed with the Python programming language to work with human language data and built with over 50 corpus and lexical resources under development.
-The following command is run for this kit that needs to be installed extra on the PC.
-```
-import nltk
-nltk.download() # it will open pop-up for installing nltk
-showing info https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/index.xml 
-```
-The process is completed by installing the setup that falls on the desktop.
-
-## Importing Data and Data Analysis
-The IMDB Dataset file is placed in the folder where Jupyter Notebook receives data. Then the following command is run and the data is retrieved.
-```
-imdb_data=pd.read_csv('IMDB Dataset.csv')
-print(imdb_data.shape)
-imdb_data.head(10)
-review	sentiment
-0	One of the other reviewers has mentioned that ...	positive
-1	A wonderful little production. <br /><br />The...	positive
-2	I thought this was a wonderful way to spend ti...	positive
-3	Basically there's a family where a little boy ...	negative
-4	Petter Mattei's "Love in the Time of Money" is...	positive
-5	Probably my all-time favorite movie, a story o...	positive
-6	I sure would like to see a resurrection of a u...	positive
-7	This show was an amazing, fresh & innovative i...	negative
-8	Encouraged by the positive comments about this...	negative
-9	If you like original gut wrenching laughter yo...	positive
-```
-## Data Describe and Sentiment Count (Control) 
-```
-imdb_data.describe()
-imdb_data['sentiment'].value.counts()
-```
-## Text normalization
-Words are tokenized. To separate a statement into words, we utilise the word tokenize () method.
-```
-tokenizer=ToktokTokenizer()
-stopword_list=nltk.corpus.stopwords.words('english')
+#### Implemented with cv model for taking scores for every part of data 
 ```
 
-## Removing the html strips
-```
-def strip_html(text):
-    soup = BeautifulSoup(text, "html.parser")
-    return soup.get_text()
-#Removing the square brackets
-def remove_between_square_brackets(text):
-    return re.sub('\[[^]]*\]', '', text)
-#Removing the noisy text
-def denoise_text(text):
-    text = strip_html(text)
-    text = remove_between_square_brackets(text)
-    return text
-#Apply function on review column
-imdb_data['review']=imdb_data['review'].apply(denoise_text)
-```
-## Removing special characters
-Since English evaluations are used in the dataset, it is necessary to ensure that special characters are deleted.
-```
-#Define function for removing special characters
-def remove_special_characters(text, remove_digits=True):
-    pattern=r'[^a-zA-z0-9\s]'
-    text=re.sub(pattern,'',text)
-    return text
-#Apply function on review column
-imdb_data['review']=imdb_data['review'].apply(remove_special_characters)
+CV_Pred = cvModel.transform(validation_df)
+new_prediction = CV_Pred.filter(col('prediction')!=np.nan)
+
+evaluator = RegressionEvaluator(metricName="r2",labelCol="rating",predictionCol="prediction")
+evaluator_rmse = RegressionEvaluator(metricName="rmse",labelCol="rating",predictionCol="prediction")
+
+rsquare = evaluator_rmse.evaluate(new_prediction)
+rmse = evaluator.evaluate(new_prediction)
+print("r2= "+str(rsquare))             #I took r2 and rmse scores   
+print("rmse= "+str(rmse))              #rmse score is perfect but r2 is explane:This data not 
+                                       #suitable for prediction but we are working on recommendation staff so it is not important
+r2= 0.9372678988760661
+rmse= 0.21520010750095808
 ```
 
-## Removing stopwords and normalization
-Stop words are words that have little or no meaning, especially when synthesising meaningful aspects from the text.
-Stop words are words that are filtered out of natural language data (text) before or after it is processed in computers. While “stop words” usually refers to a language’s most common terms, all-natural language processing algorithms don’t employ a single universal list.
-Stopwords include words such as a, an, the, and others.
 ```
-#set stopwords to english
-stop=set(stopwords.words('english'))
-print(stop)
+CV_Pred.show(10)
 
-#removing the stopwords
-def remove_stopwords(text, is_lower_case=False):
-    tokens = tokenizer.tokenize(text)
-    tokens = [token.strip() for token in tokens]
-    if is_lower_case:
-        filtered_tokens = [token for token in tokens if token not in stopword_list]
-    else:
-        filtered_tokens = [token for token in tokens if token.lower() not in stopword_list]
-    filtered_text = ' '.join(filtered_tokens)    
-    return filtered_text
-#Apply function on review column
-imdb_data['review']=imdb_data['review'].apply(remove_stopwords)
-{'ours', 'he', 'our', 'am', 'aren', 'each', 'yourselves', 'o', 'all', 'any', 'what', 'during', 'as', 'those', "you've", 'on', "shan't", "that'll", 'these', 'yours', 'hasn', 'who', 'of', 'doing', 'did', 'for', 'against', 'why', 'few', 'its', 's', 'will', 'weren', 'very', 'whom', 'can', 'further', 'she', 'because', 'me', 'be', "couldn't", 'than', 'being', 'down', 'should', 'isn', 'needn', 'over', "didn't", 'ain', 'had', 'd', 'again', 'some', 'been', 'where', 'm', "hadn't", "won't", 'more', "mustn't", 'once', 'does', 'and', 'under', 'myself', 'so', "it's", 'hadn', 'mustn', 'the', "shouldn't", 'their', 'while', 'were', 'himself', 'out', 'both', 'own', 'll', 'there', 'don', 'in', 'with', 'into', 'but', "aren't", 'just', 'this', 'yourself', 'here', 'nor', 'too', 'no', 'how', 'hers', 'below', 'when', 'before', 'are', 'after', "wasn't", 'couldn', 'do', 'such', 'ourselves', "wouldn't", 've', 'now', 'shan', 'itself', 'theirs', 'most', 'her', "you'd", 't', 'other', "you'll", 'y', 'won', 'your', 'having', "weren't", 'we', 'was', 'an', 'above', 'that', 'from', 'up', 'about', 'ma', 'same', "don't", "needn't", 'to', 'haven', 'not', 're', 'they', "isn't", 'off', 'themselves', 'at', 'didn', 'my', 'have', 'herself', 'a', 'by', 'or', "mightn't", 'has', 'it', 'you', "she's", 'wouldn', 'then', 'between', "you're", 'his', "haven't", 'until', "hasn't", 'through', 'mightn', 'shouldn', 'is', "should've", 'wasn', 'i', "doesn't", 'doesn', 'him', 'which', 'if', 'only', 'them'}
++------+-------+------+---------+----------+
+|userId|movieId|rating|timestamp|prediction|
++------+-------+------+---------+----------+
+|     1|    858|   5.0|980730742|  3.779253|
+|     1|    451|   1.0|980731789|       NaN|
+|     1|   1201|   4.0|980730742| 3.2785628|
+|     1|   1034|   3.0|980731208|  3.267778|
+|     1|     22|   3.0|980731380| 3.0015154|
+|     1|   1197|   4.0|980730769|  3.917275|
+|     1|    590|   2.0|980732165| 3.2255154|
+|     1|    457|   4.0|980730816| 3.8312576|
+|     1|    608|   5.0|980732037| 3.2846289|
+|     1|    996|   2.0|980732235| 2.8194199|
++------+-------+------+---------+----------+
+only showing top 10 rows
 ```
+#### Filtered same movieId and taking predictins
+```
+predictions.join(movies_df,"movieId").select("userId","title","genres","prediction").show(15)
+
++------+--------------------+--------------------+----------+
+|userId|               title|              genres|prediction|
++------+--------------------+--------------------+----------+
+|    31|American Tail: Fi...|Adventure|Animati...| 2.1850998|
+|    31|Land Before Time,...|Adventure|Animati...| 2.4595604|
+|   516|Devil's Advocate,...|Drama|Mystery|Thr...| 2.8890162|
+|   516|                  10|      Comedy|Romance| 2.1996143|
+|    85|   American Splendor|        Comedy|Drama|  4.577711|
+|    53|        Galaxy Quest|Adventure|Comedy|...| 3.1859865|
+|   481|Men in Black (a.k...|Action|Comedy|Sci-Fi|  3.894961|
+|   633|Men in Black (a.k...|Action|Comedy|Sci-Fi| 2.4802399|
+|   597|       Out of Africa|       Drama|Romance|   4.02375|
+|   155|Hellbound: Hellra...|              Horror|  3.100603|
+|   193|Hudsucker Proxy, The|              Comedy|   4.20068|
+|   126|       Dirty Dancing|Drama|Musical|Rom...| 3.7039447|
+|   183|Men in Black (a.k...|Action|Comedy|Sci-Fi| 3.3027043|
+|   210|               Spawn|Action|Adventure|...|  2.426955|
+|   210|Children of the Corn|     Horror|Thriller| 3.1096544|
++------+--------------------+--------------------+----------+
+only showing top 15 rows
+```
+#### Filtered to userId 599 we want to make predict for giving ratings different kind of movie by same user 
+
+```
+for_one_user = predictions.filter(col("userId")==599).join(movies_df,"movieId").join(links_df,"movieId").select("userId","title","genres","tmdbId","prediction")
+for_one_user.show(5)
+
++------+--------------------+--------------------+------+----------+
+|userId|               title|              genres|tmdbId|prediction|
++------+--------------------+--------------------+------+----------+
+|   599|        Strange Days|Action|Crime|Dram...|   281| 3.7138426|
+|   599|Clear and Present...|Action|Crime|Dram...|  9331|  3.656493|
+|   599|        True Romance|      Crime|Thriller|   319| 4.0647445|
+|   599|              Eraser|Action|Drama|Thri...|  9268| 2.8951352|
+|   599|    Army of Darkness|Action|Adventure|...|   766|  4.067372|
++------+--------------------+--------------------+------+----------+
+only showing top 5 rows
+```
+
+```
+import webbrowser 
+link="https://www.themoviedb.org/movie/"           #I get movie titles
+for movie in for_one_user.take(5):
+    movieURL=link+str(movie.tmdbId)
+    print(movie.title)
+    webbrowser.open(movieURL)
+Replacement Killers, The
+Army of Darkness
+Ronin
+True Romance
+Eraser
+
+```
+#### Taking 5 recommendations on model for Users and Items
+
+```
+userRecommends=model.recommendForAllUsers(5)
+movieRecommends=model.recommendForAllItems(5)
+
+```
+
+```
+userRecommends.printSchema()                           #inside of user recommends
+
+root
+ |-- userId: integer (nullable = false)
+ |-- recommendations: array (nullable = true)
+ |    |-- element: struct (containsNull = true)
+ |    |    |-- movieId: integer (nullable = true)
+ |    |    |-- rating: float (nullable = true)
+
+```
+
+```
+userRecommends.show(5)
++------+--------------------+
+|userId|     recommendations|
++------+--------------------+
+|     1|[{2660, 4.57362},...|
+|     3|[{31116, 5.746894...|
+|     5|[{72605, 5.328123...|
+|     6|[{115170, 4.89595...|
+|     9|[{1216, 4.986879}...|
++------+--------------------+
+only showing top 5 rows
+
+```
+
+#### Selecting movieIds and make recommendations according to userIds
+```
+userRecommends.select("userId","recommendations.movieId").show(10,False)  
++------+------------------------------------+
+|userId|movieId                             |
++------+------------------------------------+
+|1     |[5294, 2649, 7088, 260, 1428]       |
+|3     |[2649, 1428, 5792, 1283, 1404]      |
+|5     |[71379, 3262, 3055, 493, 5613]      |
+|6     |[115170, 98243, 106841, 1238, 85056]|
+|9     |[8675, 7338, 2649, 83, 678]         |
+|12    |[2966, 123, 3161, 745, 53894]       |
+|13    |[8675, 7338, 7088, 7070, 106841]    |
+|15    |[7940, 1306, 1238, 2295, 3204]      |
+|16    |[27873, 3466, 7088, 4703, 4187]     |
+|17    |[963, 4675, 2398, 5264, 3784]       |
++------+------------------------------------+
+only showing top 10 rows
+
+```
+
+```
+movieRecommends.printSchema()
+root
+ |-- movieId: integer (nullable = false)
+ |-- recommendations: array (nullable = true)
+ |    |-- element: struct (containsNull = true)
+ |    |    |-- userId: integer (nullable = true)
+ |    |    |-- rating: float (nullable = true)
+ 
+```
+
+#### Make user recommendations for films 
+```
+movieRecommends.select("movieId","recommendations.userId").show(10,False)
+
++-------+-------------------------+
+|movieId|userId                   |
++-------+-------------------------+
+|1      |[241, 268, 530, 444, 691]|
+|3      |[95, 452, 163, 124, 612] |
+|5      |[241, 530, 133, 479, 118]|
+|6      |[201, 530, 82, 306, 112] |
+|9      |[452, 675, 265, 612, 133]|
+|12     |[504, 675, 220, 480, 452]|
+|13     |[241, 268, 530, 133, 691]|
+|15     |[480, 504, 366, 249, 452]|
+|16     |[241, 530, 181, 334, 201]|
+|17     |[241, 334, 530, 181, 268]|
++-------+-------------------------+
+only showing top 10 rows
+
+```
+#### Taking distinct 5 userId for recommendation
+```
+users=ratings_df.select("userId").distinct().limit(5)
+users.show()
++------+
+|userId|
++------+
+|   148|
+|   463|
+|   471|
+|   496|
+|   243|
++------+
+```
+####  10 Sample recommended for userId
+```
+userSubsetRecs = model.recommendForUserSubset(users,10)   
+userSubsetRecs.show()
+
++------+--------------------+
+|userId|     recommendations|
++------+--------------------+
+|   471|[{27873, 5.133694...|
+|   463|[{115170, 5.28641...|
+|   243|[{6669, 5.170791}...|
+|   496|[{37857, 5.92129}...|
+|   148|[{8675, 4.008882}...|
++------+--------------------+
+```
+#### Taking their movieIds
+```
+userSubsetRecs.select("userId","recommendations.movieId").show(10,False) #recomendations movieIds for userIDs
+                                                                         #end it is done !!!!
++------+-------------------------------------------------------------------+
+|userId|movieId                                                            |
++------+-------------------------------------------------------------------+
+|471   |[27873, 3466, 2810, 31193, 4187, 7088, 2083, 4703, 4873, 8477]     |
+|463   |[115170, 98243, 3598, 1414, 93721, 106696, 2810, 74754, 6645, 8477]|
+|243   |[6669, 27846, 2920, 26840, 6783, 6643, 8477, 53906, 5607, 26171]   |
+|496   |[37857, 31193, 4275, 4228, 1713, 1934, 2184, 5942, 4777, 531]      |
+|148   |[8675, 7338, 26840, 7070, 6669, 26171, 5607, 1104, 3550, 5899]     |
++------+-------------------------------------------------------------------+
+
+```
+
+```
+movies=ratings_df.select("movieId").distinct().limit(5)  #movieIds for recommeds Users
+movies.show()
++-------+
+|movieId|
++-------+
+|   1580|
+|   1645|
+|    471|
+|   1088|
+|   2142|
++-------+
+```
+
+```
+movieSubsetRecs = model.recommendForItemSubset(movies,10)                     #Same process repeated for movieId
+movieSubsetRecs.select("movieId","recommendations.userId").show(10,False)
+
++-------+--------------------------------------------------+
+|movieId|userId                                            |
++-------+--------------------------------------------------+
+|1580   |[241, 530, 265, 133, 452, 444, 268, 289, 124, 217]|
+|471    |[164, 185, 691, 289, 201, 111, 158, 538, 625, 458]|
+|2142   |[241, 452, 25, 594, 698, 265, 95, 124, 429, 41]   |
+|1645   |[452, 280, 124, 612, 241, 95, 265, 133, 217, 479] |
+|1088   |[241, 268, 472, 265, 530, 133, 3, 112, 283, 82]   |
++-------+--------------------------------------------------+
+```
+
+```
+movie_ids=[1580,3175,2366,1590]               #model tried for new users
+user_ids=[543,543,543,543]
+new_user_preds=sqlContext.createDataFrame(zip(movie_ids,user_ids),schema=['movieId','userId'])
+new_predictions=model.transform(new_user_preds)
+new_predictions.show()
+
++-------+------+----------+
+|movieId|userId|prediction|
++-------+------+----------+
+|   1580|   543|  3.381722|
+|   3175|   543| 3.2734551|
+|   2366|   543| 2.8578584|
+|   1590|   543| 2.5245814|
++-------+------+----------+
+
+```
+
