@@ -415,7 +415,6 @@ spark = SparkSession \
 ```
 ```
 ### DATA ANALYSIS AND EXPLORATION
-```
 
 ```
 movies_df = spark.read.load("movies.txt", format='csv', header = True)
