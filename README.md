@@ -613,6 +613,7 @@ root
 
 ```
 
+
 ```
 ## DATA TRAIN TEST SPLIT
 ```
@@ -626,7 +627,7 @@ root
 
 
 
-
+```
 
 ```
 4. The command is run to start a session over Spark. To use the data, 
