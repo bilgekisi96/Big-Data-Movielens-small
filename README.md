@@ -391,8 +391,6 @@ plt.show()
 # Modelling with Pyspark
 
 ```
-
-```
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext                                            #import to libraries
 from pyspark.ml.evaluation import RegressionEvaluator
