@@ -8,21 +8,25 @@ Data analysis for Movielens-Small data was carried out using Apache Spark via Ju
 This dataset (ml-latest-small) describes 5-star rating and free-text tagging activity from [MovieLens](http://movielens.org), a movie recommendation service. It contains 100023 ratings table and 2488 tag table across 8570 movies and 8570 links tables. These data were created by 610 users between March 29, 1996 and September 24, 2018. This dataset was generated on September 26, 2018.
 
 ## Setup
-  ### Pyspark setup
-  https://spark.apache.org/downloads.html Hadoop version must be 2.7 
+ 
+ ### Pyspark setup
+ 
+ https://spark.apache.org/downloads.html Hadoop version must be 2.7 
   1. Opening C:\spark file in PC
   2. Then we delete the .template extension of the log4j.properties.template file in the conf folder and open it with any text editor, change the log4j.rootCategory=INFO line to log4j.rootCategory=ERROR and save it.
  3. Go to the environment variables of Windows (Control Panel -> System and Security -> System -> Advanced System Settings -> Environment Variables) and create a new variable. Define variable name: “SPARK_HOME” value: “C:\spark”.
 Again, Select Path in the environment variables and say edit and add %SPARK_HOME%\bin to Path.
+  
   ### Hadoop Setup
+  
   1. Download "winutils.exe" for Hadoop
   2. Opening C:\hadoop file in PC Copy winutils.exe to Hadoop File
   3. Go to the C disk and create the C:\tmp\hive directory.
   It opens with the option to run command line as administrator. In the directory where winutils.exe is located, write the command: `chmod -R 777 C:\tmp\hive`
   Finally, write the `spark-shell` command on the command line and check if the installation is complete.
-  ### Anaconda Download
+ 
+ ### Anaconda Download
   1. If it is not installed on your PC, anaconda is installed via the https://www.anaconda.com/products/individual site.
-  2. To use Apache Spark on Jupyter Notebook, go to (Control Panel -> System and Security -> System -> Advanced System Settings -> Environment Variables). By pressing Edit Path C:\Users\EnesA\anaconda3 The directory where Anaconda is installed is added. C:\Users\EnesA\anaconda3\Scripts The directory of the Scripts folder in the area where anaconda is installed is added.
 
 After all the above installations are completed, it will be possible to start working.
 
